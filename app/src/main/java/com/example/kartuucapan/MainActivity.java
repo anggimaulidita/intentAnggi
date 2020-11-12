@@ -3,22 +3,33 @@ package com.example.kartuucapan;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+private int REQUEST_CODE = 100;
+private TextView tvResult;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Buttonn btnMoveActivity = findViewById(R.id.btn_move_sctivity);
+        Button btnMoveActivity = findViewById(R.id.btn_move_sctivity);
         btnMoveActivity.setOnClickListener(this);
 
         Button btnMoveWithData = findViewById(R.id.btn_move_with_data);
         btnMoveWithData.setOnClickListener(this);
+
+        Button btnDialNumber = findViewById(R.id.btn_dial_number);
+        btnDialNumber.setOnClickListener(this);
+
+        Button btnMoveForResult = findViewById(R.id.btn_move_with_result);
+        btnMoveForResult.setOnClickListener(this);
+
+        tvResult = (TextView)findViewById(R.id.tv_result);
     }
 
     @Override
@@ -28,13 +39,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent moveActivity = new Intent(MainActivity.this, MoveActivity)
                         startActivity(moveIntent )
                 break;
-             case R.id.btn_move_with_data;
+            case R.id.btn_move_with_data;
                 Intent moveWithDataIntent = new Intent(MainActivity.this, MoveWithDataActivity.class);
                 moveWithDataIntent.putExtra(MoveWithDataActivity.EXSTRA_NAME,"kampus STIMATA");
                 moveWithDataIntent.putExtra(MoveWithDataActivity.EXSTRA_NAME,20);
                 startActivity(moveWithDataIntent);
                 break;
-
+            case R.id.btn_dial_number;
+                String phoneNumber = "081556547239";
+                Intent dialPhoneNumber = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: " + phoneNumber));
+                break;
+            case R.id.btn_move_with_result;
+                Intent moveForResultIntent = new Intent(MainActivity.this, MoveForResultActivity.class);
+                startActivityForResult(moveForResultIntent, REQUEST_CODE);
+                break;
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE){
+            if (resultCode == MoveForResultActivity.RESULT_CODE){
+                int selectedValue = data.getIntExtra(MoveForResultActivity.EXTRA_SELECTED_VALUE, 0);
+                tvResult.setText("Hasil: " +selectedValue);
+            }
         }
     }
 }
